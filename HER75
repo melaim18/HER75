@@ -1,0 +1,718 @@
+import React, { useState } from 'react';
+import { 
+  StyleSheet, 
+  Text, 
+  View, 
+  TouchableOpacity, 
+  TextInput, 
+  ScrollView, 
+  SafeAreaView, 
+  Dimensions 
+} from 'react-native';
+import { 
+  Sparkles, 
+  Check, 
+  ChevronLeft, 
+  Heart, 
+  Calendar, 
+  Plus, 
+  Edit2,
+  Flame,
+  TrendingUp,
+  Smile
+} from 'lucide-react-native';
+import Animated, { FadeInRight } from 'react-native-reanimated';
+
+const { width, height } = Dimensions.get('window');
+
+const COLORS = {
+  bg: '#FAFAFA',
+  surfaceLight: '#FFFFFF',
+  textMain: '#1A1A1A',
+  textMuted: '#707070',
+  burgundy: '#6B1D2F',
+  burgundyLight: '#F5ECED',
+  border: '#EAEAEA'
+};
+
+export default function App() {
+  const [step, setStep] = useState(0);
+  const [name, setName] = useState('');
+  const [selectedChallenge, setSelectedChallenge] = useState('75 Soft');
+  const [selectedGoals, setSelectedGoals] = useState([]);
+  const [startDate, setStartDate] = useState('Today');
+
+  const nextStep = () => setStep((prev) => prev + 1);
+  const prevStep = () => setStep((prev) => (prev > 0 ? prev - 1 : 0));
+
+  const toggleGoal = (goal) => {
+    if (selectedGoals.includes(goal)) {
+      setSelectedGoals(selectedGoals.filter(g => g !== goal));
+    } else {
+      setSelectedGoals([...selectedGoals, goal]);
+    }
+  };
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.bg }}>
+      {step > 0 && step < 9 && (
+        <View style={styles.header}>
+          <TouchableOpacity onPress={prevStep} accessibilityRole="button" aria-label="Go back">
+            <ChevronLeft color={COLORS.textMain} size={24} />
+          </TouchableOpacity>
+          <View style={styles.progressBarBg}>
+            <View style={[styles.progressBarFill, { width: `${(step / 8) * 100}%` }]} />
+          </View>
+          <View style={{ width: 24 }} />
+        </View>
+      )}
+
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} bounces={false}>
+        
+        {step === 0 && (
+          <TouchableOpacity style={styles.splashContainer} activeOpacity={0.9} onPress={nextStep}>
+            <Text style={styles.splashText}>75</Text>
+            <View style={styles.floatingActionCircle}>
+              <Heart color="#FFFFFF" size={20} fill={COLORS.burgundy} />
+            </View>
+          </TouchableOpacity>
+        )}
+
+        {step === 1 && (
+          <Animated.View entering={FadeInRight} style={styles.stepContainer}>
+            <View style={{ width: '100%' }}>
+              <Text style={styles.topNavLabel}>Her75 Challenge</Text>
+              <Text style={styles.titleSerifCenter}>Choose{"\n"}your challenge</Text>
+              
+              {[
+                { title: '75 Day Hard', spots: '+10,000 joined', icon: Flame },
+                { title: '75 Medium', spots: '+5,000 joined', icon: TrendingUp },
+                { title: '75 Soft', spots: '+7,500 joined', icon: Smile }
+              ].map((tier) => {
+                // Resolved the conditional style explicitly here to prevent matrix parsing crashes:
+                const isTierSelected = selectedChallenge === tier.title;
+                return (
+                  <TouchableOpacity 
+                    key={tier.title} 
+                    style={[styles.tierCard, isTierSelected && { borderColor: COLORS.burgundy }]}
+                    onPress={() => setSelectedChallenge(tier.title)}
+                  >
+                    <View style={styles.tierHeader}>
+                      <Text style={styles.tierTitle}>{tier.title}</Text>
+                      <View style={styles.pillBadge}><Text style={styles.pillBadgeText}>{tier.spots}</Text></View>
+                    </View>
+                    <View style={styles.tierMockImages}>
+                      <tier.icon color={COLORS.burgundy} size={20} />
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            <TouchableOpacity style={styles.primaryButton} onPress={nextStep}>
+              <Text style={styles.primaryButtonText}>Get Started</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
+        {step === 2 && (
+          <Animated.View entering={FadeInRight} style={styles.stepContainer}>
+            <View style={{ width: '100%' }}>
+              <View style={styles.todoPreviewCard}>
+                <Text style={styles.todoCardHeader}>Day 1</Text>
+                <View style={styles.todoItem}>
+                  <Sparkles color={COLORS.burgundy} size={16} />
+                  <Text style={styles.todoText}>Eat clean (no junk food, no alcohol)</Text>
+                  <View style={styles.checkboxFake} />
+                </View>
+                <View style={styles.todoItem}>
+                  <Sparkles color={COLORS.burgundy} size={16} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.todoText}>Drink ONLY water</Text>
+                    <Text style={styles.todoTimeSub}>4:19pm</Text>
+                  </View>
+                  <View style={[styles.checkboxFake, { backgroundColor: COLORS.textMain }]}><Check color="#FFFFFF" size={12} /></View>
+                </View>
+                <View style={styles.todoItem}>
+                  <Sparkles color={COLORS.burgundy} size={16} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.todoText}>Walk 10,000 steps a day</Text>
+                    <Text style={styles.todoTimeSub}>4:19pm</Text>
+                  </View>
+                  <View style={[styles.checkboxFake, { backgroundColor: '#A0A0A0' }]}><Check color="#FFFFFF" size={12} /></View>
+                </View>
+              </View>
+              <Text style={styles.titleSerifCenter}>Your daily to-do,{"\n"}your <Text style={{ fontStyle: 'italic', color: COLORS.burgundy }}>aesthetic</Text>.</Text>
+            </View>
+            <TouchableOpacity style={styles.primaryButton} onPress={nextStep}>
+              <Text style={styles.primaryButtonText}>Continue</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
+        {step === 3 && (
+          <Animated.View entering={FadeInRight} style={styles.stepContainer}>
+            <View style={{ width: '100%', marginTop: 20 }}>
+              {['Maddy', 'Anna', 'Blake'].map((friend, idx) => (
+                <View key={friend} style={[styles.friendCard, { marginTop: idx > 0 ? -30 : 0 }]}>
+                  <View style={styles.friendProfileRow}>
+                    <View style={styles.avatarMini}><Text style={styles.avatarText}>{friend[0]}</Text></View>
+                    <View>
+                      <Text style={styles.friendName}>{friend}</Text>
+                      <Text style={styles.friendDay}>Day 75</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.friendTaskLine}>• Walk 10,000 steps</Text>
+                </View>
+              ))}
+              <Text style={[styles.titleSerifCenter, { marginTop: 40 }]}>See your friends’{"\n"}tasks and <Text style={{ fontStyle: 'italic', color: COLORS.burgundy }}>aesthetic</Text>.</Text>
+            </View>
+            <TouchableOpacity style={styles.primaryButton} onPress={nextStep}>
+              <Text style={styles.primaryButtonText}>Continue</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
+        {step === 4 && (
+          <Animated.View entering={FadeInRight} style={styles.stepContainer}>
+            <View style={styles.editorialGrid}>
+              <View style={styles.editorialBlockLeft} />
+              <View style={styles.editorialBlockRight} />
+            </View>
+            <View style={{ width: '100%' }}>
+              <Text style={styles.titleSerifCenter}>Become{"\n"}“that girl”</Text>
+              <TouchableOpacity style={styles.primaryButton} onPress={nextStep}>
+                <Text style={styles.primaryButtonText}>I'm ready</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        )}
+
+        {step === 5 && (
+          <Animated.View entering={FadeInRight} style={styles.stepContainer}>
+            <View style={{ width: '100%' }}>
+              <Text style={styles.titleSerifLeft}>What's your name?</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Your name"
+                placeholderTextColor="#A0A0A0"
+                value={name}
+                onChangeText={setName}
+                autoFocus
+              />
+            </View>
+            <TouchableOpacity style={[styles.primaryButton, !name && styles.buttonDisabled]} disabled={!name} onPress={nextStep}>
+              <Text style={styles.primaryButtonText}>Continue</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
+        {step === 6 && (
+          <Animated.View entering={FadeInRight} style={styles.stepContainer}>
+            <View style={{ width: '100%' }}>
+              <Text style={styles.titleSerifLeft}>How did you hear{"\n"}about Her75?</Text>
+              <View style={styles.listContainer}>
+                {['TikTok', 'Pinterest', 'Content Creator', 'Instagram', 'Friend', 'Family', 'Other'].map((item, index) => (
+                  <TouchableOpacity key={item} style={styles.radioRow} onPress={nextStep}>
+                    <View style={[styles.radioCircle, index === 0 && { backgroundColor: COLORS.burgundy, borderColor: COLORS.burgundy }]}>
+                      {index === 0 && <Check color="#FFFFFF" size={10} />}
+                    </View>
+                    <Text style={[styles.radioText, index === 0 && { fontWeight: '600' }]}>{item}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </Animated.View>
+        )}
+
+        {step === 7 && (
+          <Animated.View entering={FadeInRight} style={styles.stepContainer}>
+            <View style={{ width: '100%' }}>
+              <Text style={styles.titleSerifLeft}>Why do you want to{"\n"}<Text style={{ fontStyle: 'italic', color: COLORS.burgundy }}>complete</Text> a challenge?</Text>
+              <View style={styles.gridContainer}>
+                {[
+                  { id: '1', label: 'Become my best self' },
+                  { id: '2', label: 'Reset my life' },
+                  { id: '3', label: 'Feel confident' },
+                  { id: '4', label: 'Build discipline' }
+                ].map((goal) => {
+                  const isGoalSelected = selectedGoals.includes(goal.id);
+                  return (
+                    <TouchableOpacity 
+                      key={goal.id} 
+                      style={[styles.gridCard, isGoalSelected && { borderColor: COLORS.burgundy, backgroundColor: COLORS.burgundyLight }]} 
+                      onPress={() => toggleGoal(goal.id)}
+                    >
+                      <View style={styles.cardPlaceholderImage}>
+                        <Heart color={COLORS.burgundy} size={18} fill={isGoalSelected ? COLORS.burgundy : 'transparent'} />
+                      </View>
+                      <Text style={styles.cardText}>{goal.label}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+            <TouchableOpacity style={styles.primaryButton} onPress={nextStep}>
+              <Text style={styles.primaryButtonText}>Continue</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
+        {step === 8 && (
+          <Animated.View entering={FadeInRight} style={styles.stepContainer}>
+            <View style={{ width: '100%', alignItems: 'center', marginTop: 40 }}>
+              <Text style={styles.titleSerifCenter}>When{"\n"}do you start?</Text>
+              <View style={styles.dateSelectorContainer}>
+                <Calendar color={COLORS.burgundy} size={36} style={{ marginBottom: 16 }} />
+                <TouchableOpacity style={styles.dateBadge}>
+                  <Text style={styles.dateBadgeText}>{startDate}</Text>
+                </TouchableOpacity>
+                <Text style={styles.dateSubtext}>Wed, Jun 17</Text>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.primaryButton} onPress={nextStep}>
+              <Text style={styles.primaryButtonText}>Continue</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
+        {step === 9 && (
+          <Animated.View entering={FadeInRight} style={[styles.stepContainer, { paddingHorizontal: 16 }]}>
+            <View style={{ width: '100%' }}>
+              <Text style={styles.titleSerifCenter}>75 Soft</Text>
+              <View style={[styles.pillBadge, { alignSelf: 'center', marginTop: -16, marginBottom: 20 }]}>
+                <Text style={styles.pillBadgeText}>+7,500 joined</Text>
+              </View>
+              
+              <TouchableOpacity style={styles.createTaskButton}>
+                <Plus color={COLORS.textMuted} size={16} />
+                <Text style={styles.createTaskButtonText}>Create Daily Task+</Text>
+              </TouchableOpacity>
+
+              <View style={styles.interactiveList}>
+                {[
+                  { num: '1', text: 'Eat clean (2 exceptions per week allowed)' },
+                  { num: '2', text: 'Drink water' },
+                  { num: '3', text: 'Walk 10,000 steps a day' },
+                  { num: '4', text: 'Listen to a podcast (5+ min)' }
+                ].map((task) => (
+                  <View key={task.num} style={styles.dashboardTaskRow}>
+                    <View style={styles.taskIndexIndicator}>
+                      <Text style={styles.taskIndexText}>{task.num}</Text>
+                    </View>
+                    <Text style={styles.dashboardTaskText} numberOfLines={1}>{task.text}</Text>
+                    <TouchableOpacity><Edit2 color={COLORS.textMuted} size={14} /></TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={{ width: '100%', alignItems: 'center' }}>
+              <Text style={styles.footerMutedNote}>low pressure, high payoff</Text>
+              <TouchableOpacity style={styles.validateButton} onPress={() => setStep(0)}>
+                <Text style={styles.validateButtonText}>Validate</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        )}
+
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 12
+  },
+  progressBarBg: {
+    flex: 1,
+    height: 2,
+    backgroundColor: '#E5E5E5',
+    marginHorizontal: 20,
+    borderRadius: 1
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: COLORS.burgundy
+  },
+  topNavLabel: {
+    textAlign: 'center',
+    fontWeight: '600',
+    fontSize: 14,
+    color: COLORS.textMain,
+    marginVertical: 10
+  },
+  splashContainer: {
+    flex: 1,
+    height: height - 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF'
+  },
+  splashText: {
+    fontSize: 110,
+    fontFamily: 'Georgia', 
+    fontWeight: '300',
+    letterSpacing: -2,
+    color: COLORS.textMain
+  },
+  floatingActionCircle: {
+    position: 'absolute',
+    bottom: 80,
+    right: 30,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: COLORS.textMain,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4
+  },
+  stepContainer: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 32,
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  titleSerifCenter: {
+    fontSize: 32,
+    fontFamily: 'Georgia',
+    color: COLORS.textMain,
+    lineHeight: 40,
+    textAlign: 'center',
+    marginBottom: 24
+  },
+  titleSerifLeft: {
+    fontSize: 32,
+    fontFamily: 'Georgia',
+    color: COLORS.textMain,
+    lineHeight: 42,
+    marginBottom: 24,
+    textAlign: 'left'
+  },
+  input: {
+    borderBottomWidth: 1.5,
+    borderBottomColor: COLORS.textMain,
+    paddingVertical: 10,
+    fontSize: 20,
+    color: COLORS.textMain,
+    fontFamily: 'Georgia',
+    marginTop: 20
+  },
+  listContainer: {
+    marginVertical: 8,
+    width: '100%'
+  },
+  radioRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border
+  },
+  radioCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16
+  },
+  radioText: {
+    fontSize: 16,
+    color: COLORS.textMain,
+    fontWeight: '300'
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10
+  },
+  gridCard: {
+    width: '48%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: 14
+  },
+  cardPlaceholderImage: {
+    height: 90,
+    backgroundColor: COLORS.bg,
+    borderRadius: 12,
+    marginBottom: 12,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  cardText: {
+    fontSize: 13,
+    color: COLORS.textMain,
+    fontWeight: '600'
+  },
+  tierCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: 16,
+    width: '100%'
+  },
+  tierHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14
+  },
+  tierTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLORS.textMain
+  },
+  pillBadge: {
+    backgroundColor: COLORS.burgundyLight,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12
+  },
+  pillBadgeText: {
+    color: COLORS.burgundy,
+    fontSize: 12,
+    fontWeight: '700'
+  },
+  tierMockImages: {
+    height: 60,
+    backgroundColor: COLORS.bg,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  todoPreviewCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginVertical: 24,
+    width: '100%'
+  },
+  todoCardHeader: {
+    fontSize: 14,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: COLORS.textMain,
+    marginBottom: 12
+  },
+  todoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    gap: 12
+  },
+  todoText: {
+    fontSize: 14,
+    color: COLORS.textMain,
+    flex: 1,
+    fontWeight: '500'
+  },
+  todoTimeSub: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 2
+  },
+  checkboxFake: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  friendCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    width: '100%'
+  },
+  friendProfileRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 8
+  },
+  avatarMini: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.burgundyLight,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  avatarText: {
+    color: COLORS.burgundy,
+    fontWeight: '700',
+    fontSize: 12
+  },
+  friendName: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.textMain
+  },
+  friendDay: {
+    fontSize: 11,
+    color: COLORS.textMuted
+  },
+  friendTaskLine: {
+    fontSize: 13,
+    color: COLORS.textMain,
+    paddingLeft: 44
+  },
+  editorialGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    height: height * 0.35,
+    marginVertical: 20
+  },
+  editorialBlockLeft: {
+    width: '58%',
+    backgroundColor: COLORS.burgundyLight,
+    borderRadius: 20
+  },
+  editorialBlockRight: {
+    width: '38%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    height: '80%',
+    alignSelf: 'flex-end',
+    borderWidth: 1,
+    borderColor: COLORS.border
+  },
+  dateSelectorContainer: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 24,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginTop: 20
+  },
+  dateBadge: {
+    backgroundColor: COLORS.textMain,
+    paddingHorizontal: 28,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginBottom: 6
+  },
+  dateBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '600'
+  },
+  dateSubtext: {
+    fontSize: 13,
+    color: COLORS.textMuted
+  },
+  createTaskButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 14,
+    gap: 8,
+    marginBottom: 16,
+    backgroundColor: '#FFFFFF'
+  },
+  createTaskButtonText: {
+    color: COLORS.textMuted,
+    fontSize: 14,
+    fontWeight: '600'
+  },
+  interactiveList: {
+    gap: 10,
+    marginBottom: 24
+  },
+  dashboardTaskRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border
+  },
+  taskIndexIndicator: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    backgroundColor: COLORS.burgundyLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12
+  },
+  taskIndexText: {
+    color: COLORS.burgundy,
+    fontSize: 11,
+    fontWeight: '700'
+  },
+  dashboardTaskText: {
+    flex: 1,
+    fontSize: 14,
+    color: COLORS.textMain,
+    fontWeight: '500'
+  },
+  footerMutedNote: {
+    fontSize: 13,
+    color: COLORS.textMuted,
+    fontStyle: 'italic',
+    marginBottom: 6
+  },
+  primaryButton: {
+    backgroundColor: COLORS.textMain,
+    width: width * 0.88,
+    paddingVertical: 16,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600'
+  },
+  buttonDisabled: {
+    backgroundColor: '#EAEAEA'
+  },
+  validateButton: {
+    backgroundColor: COLORS.burgundy,
+    width: width * 0.88,
+    paddingVertical: 16,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  validateButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600'
+  }
+});
