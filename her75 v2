@@ -1,0 +1,449 @@
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+  SafeAreaView,
+  Dimensions,
+  Animated
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Sparkles, Heart, Flame, Sun, Moon, Dumbbell, Apple, Apple as WaterDrop, User, ArrowRight, ArrowLeft } from 'lucide-react-native';
+
+const { width } = Dimensions.get('window');
+
+// Color Palette
+const COLORS = {
+  primary: '#6b1d2f',     // Rich Burgundy
+  secondary: '#a3485e',   // Soft Rose/Burgundy
+  background: '#fefaf8',  // Cream / Warm White
+  surface: '#ffffff',
+  textDark: '#2c181c',
+  textLight: '#8c767a',
+  accentPastel: '#f5e6e8',
+};
+
+export default function Her75Onboarding() {
+  const [step, setStep] = useState(1);
+  const [name, setName] = useState('');
+  const [source, setSource] = useState('');
+  const [goal, setGoal] = useState('');
+  const [vibe, setVibe] = useState('');
+  const [challenge, setChallenge] = useState('');
+
+  const nextStep = () => setStep((prev) => Math.min(prev + 1, 6));
+  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
+
+  // Step 1: Welcome Splash
+  const renderStep1 = () => (
+    <View style={styles.centerContainer}>
+      <Text style={styles.heroTitle}>75</Text>
+      <Text style={styles.subtitle}>Elevate your everyday aesthetic</Text>
+      <TouchableOpacity style={styles.primaryButton} onPress={nextStep}>
+        <Text style={styles.buttonText}>Begin Journey</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  // Step 2: Name Input
+  const renderStep2 = () => (
+    <View style={styles.containerInner}>
+      <Text style={styles.questionText}>What is your name, beautiful?</Text>
+      <TextInput
+        style={styles.textInput}
+        placeholder="Your name"
+        placeholderTextColor={COLORS.textLight}
+        value={name}
+        onChangeText={setName}
+      />
+      <TouchableOpacity 
+        style={[styles.primaryButton, !name && styles.disabledButton]} 
+        onPress={nextStep}
+        disabled={!name}
+      >
+        <Text style={styles.buttonText}>Continue</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  // Step 3: Discovery Source
+  const renderStep3 = () => {
+    const options = ['TikTok', 'Pinterest', 'Instagram', 'A Friend', 'Other'];
+    return (
+      <View style={styles.containerInner}>
+        <Text style={styles.questionText}>How did you find Her75?</Text>
+        {options.map((opt) => (
+          <TouchableOpacity
+            key={opt}
+            style={[styles.selectableCard, source === opt && styles.selectedCard]}
+            onPress={() => setSource(opt)}
+          >
+            <Text style={[styles.cardText, source === opt && styles.selectedCardText]}>{opt}</Text>
+            <Heart size={16} color={source === opt ? COLORS.primary : '#ccc'} fill={source === opt ? COLORS.primary : 'transparent'} />
+          </TouchableOpacity>
+        ))}
+        <TouchableOpacity style={styles.primaryButton} onPress={nextStep}>
+          <Text style={styles.buttonText}>Continue</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  // Step 4: Primary Goal
+  const renderStep4 = () => {
+    const goals = [
+      { id: 'best', label: 'Become my best self', icon: Sparkles },
+      { id: 'reset', label: 'Reset my inner life', icon: Moon },
+      { id: 'confident', label: 'Feel radiant & confident', icon: Sun },
+      { id: 'discipline', label: 'Build mindful discipline', icon: Flame },
+    ];
+    return (
+      <View style={styles.containerInner}>
+        <Text style={styles.questionText}>Your ultimate focus:</Text>
+        <View style={styles.gridContainer}>
+          {goals.map((g) => {
+            const Icon = g.icon;
+            return (
+              <TouchableOpacity
+                key={g.id}
+                style={[styles.gridCard, goal === g.id && styles.selectedGridCard]}
+                onPress={() => setGoal(g.id)}
+              >
+                <Icon size={24} color={goal === g.id ? COLORS.primary : COLORS.secondary} />
+                <Text style={[styles.gridCardText, goal === g.id && styles.selectedCardText]}>{g.label}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        <TouchableOpacity style={styles.primaryButton} onPress={nextStep}>
+          <Text style={styles.buttonText}>Continue</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  // Step 5: Choose Challenge
+  const renderStep5 = () => {
+    const challenges = [
+      { id: 'hotter', title: '75 Hotter Challenge', routines: '5 daily rituals', dynamic: 'Popular' },
+      { id: 'hard', title: '75 Day Hard', routines: 'Strict Rules', dynamic: 'Intense' },
+      { id: 'soft', title: '75 Day Soft', routines: 'Gentle Habit Building', dynamic: 'Balanced' },
+    ];
+    return (
+      <ScrollView contentContainerStyle={styles.containerInner}>
+        <Text style={styles.questionText}>Select your ritual pathway</Text>
+        {challenges.map((c) => (
+          <TouchableOpacity
+            key={c.id}
+            style={[styles.challengeCard, challenge === c.id && styles.selectedChallengeCard]}
+            onPress={() => setChallenge(c.id)}
+          >
+            <View>
+              <Text style={styles.challengeTitle}>{c.title}</Text>
+              <Text style={styles.challengeSubtitle}>{c.routines}</Text>
+            </View>
+            <Text style={styles.tagText}>{c.dynamic}</Text>
+          </TouchableOpacity>
+        ))}
+        <TouchableOpacity style={styles.primaryButton} onPress={nextStep}>
+          <Text style={styles.buttonText}>Preview Plan</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    );
+  };
+
+  // Step 6: Challenge Blueprint & Commitment
+  const renderStep6 = () => (
+    <ScrollView contentContainerStyle={styles.containerInner}>
+      <Text style={styles.questionText}>Your 75 Hotter Blueprint</Text>
+      <Text style={styles.descriptionText}>A curated daily structure tailored for alignment, wellness, and radiance.</Text>
+
+      <View style={styles.previewTaskContainer}>
+        {[
+          { text: 'Walk 10,000 intentional steps', icon: Flame },
+          { text: 'Nourish with clean proteins & greens', icon: Apple },
+          { text: 'Hydrate with elegant clarity (3L Water)', icon: Sparkles },
+          { text: 'A 10-minute evening tidy ritual', icon: Moon },
+          { text: 'Practice 5 minutes of empowering self-talk', icon: Heart }
+        ].map((item, index) => {
+          const TaskIcon = item.icon;
+          return (
+            <View key={index} style={styles.taskItem}>
+              <View style={styles.taskIconWrapper}>
+                <TaskIcon size={16} color={COLORS.primary} />
+              </View>
+              <Text style={styles.taskText}>{item.text}</Text>
+            </View>
+          );
+        })}
+      </View>
+
+      <TouchableOpacity style={styles.finalButton}>
+        <Text style={styles.finalButtonText}>Commit to My Journey</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      {/* Header Controls */}
+      <View style={styles.header}>
+        {step > 1 ? (
+          <TouchableOpacity onPress={prevStep} style={styles.navButton}>
+            <ArrowLeft size={20} color={COLORS.primary} />
+          </TouchableOpacity>
+        ) : <View style={styles.navButton} />}
+        
+        {/* Progress Dots */}
+        <View style={styles.progressContainer}>
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <View 
+              key={i} 
+              style={[
+                styles.progressDot, 
+                step >= i && { backgroundColor: COLORS.primary, width: 12 }
+              ]} 
+            />
+          ))}
+        </View>
+        <View style={styles.navButton} />
+      </View>
+
+      {/* Dynamic Step View */}
+      <View style={styles.mainContent}>
+        {step === 1 && renderStep1()}
+        {step === 2 && renderStep2()}
+        {step === 3 && renderStep3()}
+        {step === 4 && renderStep4()}
+        {step === 5 && renderStep5()}
+        {step === 6 && renderStep6()}
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  navButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  progressDot: {
+    height: 4,
+    width: 4,
+    borderRadius: 2,
+    backgroundColor: '#e0d5d7',
+    marginHorizontal: 3,
+  },
+  mainContent: {
+    flex: 1,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 30,
+  },
+  containerInner: {
+    flex: 1,
+    paddingHorizontal: 30,
+    paddingTop: 40,
+  },
+  heroTitle: {
+    fontSize: 96,
+    fontFamily: 'Georgia', 
+    fontWeight: '300',
+    color: COLORS.primary,
+    letterSpacing: -2,
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: COLORS.textLight,
+    textAlign: 'center',
+    marginBottom: 40,
+    fontStyle: 'italic',
+  },
+  questionText: {
+    fontSize: 24,
+    fontFamily: 'Georgia',
+    color: COLORS.textDark,
+    marginBottom: 30,
+    fontWeight: '400',
+  },
+  textInput: {
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.secondary,
+    fontSize: 20,
+    paddingVertical: 10,
+    color: COLORS.textDark,
+    marginBottom: 40,
+    fontFamily: 'Georgia',
+  },
+  selectableCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    padding: 18,
+    borderRadius: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#f0e6e8',
+  },
+  selectedCard: {
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.accentPastel,
+  },
+  cardText: {
+    fontSize: 16,
+    color: COLORS.textDark,
+  },
+  selectedCardText: {
+    color: COLORS.primary,
+    fontWeight: '600',
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 30,
+  },
+  gridCard: {
+    width: '48%',
+    backgroundColor: COLORS.surface,
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#f0e6e8',
+    minHeight: 120,
+    justifyContent: 'space-between',
+  },
+  selectedGridCard: {
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.accentPastel,
+  },
+  gridCardText: {
+    fontSize: 14,
+    color: COLORS.textDark,
+    marginTop: 15,
+  },
+  challengeCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    padding: 24,
+    borderRadius: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#f0e6e8',
+  },
+  selectedChallengeCard: {
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.accentPastel,
+  },
+  challengeTitle: {
+    fontSize: 18,
+    fontFamily: 'Georgia',
+    color: COLORS.textDark,
+    marginBottom: 4
+  },
+  challengeSubtitle: {
+    fontSize: 13,
+    color: COLORS.textLight,
+  },
+  tagText: {
+    fontSize: 11,
+    color: COLORS.secondary,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  previewTaskContainer: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#f0e6e8',
+    marginBottom: 30,
+  },
+  taskItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  taskIconWrapper: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.accentPastel,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+  taskText: {
+    fontSize: 14,
+    color: COLORS.textDark,
+    flex: 1,
+  },
+  descriptionText: {
+    fontSize: 14,
+    color: COLORS.textLight,
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  primaryButton: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: 16,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 'auto',
+    marginBottom: 30,
+    width: '100%',
+  },
+  disabledButton: {
+    backgroundColor: '#d6c5c7',
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  finalButton: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: 18,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 40,
+  },
+  finalButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 1,
+  },
+});
